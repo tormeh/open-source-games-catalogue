@@ -1,0 +1,16 @@
+[package]
+name = "open-source-games-catalogue"
+version = "0.1.0"
+edition = "2018"
+description = "List of Open Source games"
+publish = false
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+wasm-bindgen = "0.2.78"
+druid = { git = "https://github.com/linebender/druid.git" }
+console_error_panic_hook = "0.1.7"
