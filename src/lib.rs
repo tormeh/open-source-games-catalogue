@@ -1,14 +1,18 @@
-use druid::widget::{Align, Flex, Label, TextBox};
-use druid::{AppLauncher, Data, Env, Lens, Widget, WidgetExt, WindowDesc};
+use druid::widget::{Align, Flex, Label, Scroll, List};
+use druid::{AppLauncher, Data, Lens, Widget, WidgetExt, WindowDesc, Color, UnitPoint};
+use std::sync::Arc;
 
 use wasm_bindgen::prelude::*;
 
-const VERTICAL_WIDGET_SPACING: f64 = 20.0;
-const TEXT_BOX_WIDTH: f64 = 200.0;
+#[derive(Clone, Data, Lens)]
+struct AppData {
+    games: Arc<Vec<Game>>,
+}
 
 #[derive(Clone, Data, Lens)]
-struct HelloState {
+struct Game {
     name: String,
+    language: String
 }
 
 // This wrapper function is the primary modification we're making to the vanilla
@@ -28,8 +32,10 @@ pub fn main() {
     let main_window = WindowDesc::new(build_root_widget());
 
     // create the initial app state
-    let initial_state = HelloState {
-        name: "World".into(),
+    let veloren = Game{name:"Veloren".to_string(), language:"Rust".to_string()};
+    let zeroad = Game{name:"0ad".to_string(), language:"C++".to_string()};
+    let initial_state = AppData {
+        games: Arc::new(vec![veloren, zeroad]),
     };
 
     // start the application
@@ -38,20 +44,22 @@ pub fn main() {
         .expect("Failed to launch application");
 }
 
-fn build_root_widget() -> impl Widget<HelloState> {
-    // a label that will determine its text based on the current app data.
-    let label = Label::new(|data: &HelloState, _env: &Env| format!("Hello {}!", data.name));
-    // a textbox that modifies `name`.
-    let textbox = TextBox::new()
-        .with_placeholder("Who are we greeting?")
-        .fix_width(TEXT_BOX_WIDTH)
-        .lens(HelloState::name);
+fn build_root_widget() -> impl Widget<AppData> {
+    let list = Scroll::new(List::new(|| {
+        Label::new(|game: &Game, _env: &_| game.name.clone())
+            .align_vertical(UnitPoint::LEFT)
+            .padding(10.0)
+            .expand()
+            .height(50.0)
+            .background(Color::rgb(0.5, 0.5, 0.5))
+        }))
+        .vertical()
+        .lens(AppData::games);
+
 
     // arrange the two widgets vertically, with some padding
     let layout = Flex::column()
-        .with_child(label)
-        .with_spacer(VERTICAL_WIDGET_SPACING)
-        .with_child(textbox);
+        .with_child(list);
 
     // center the two widgets in the available space
     Align::centered(layout)
