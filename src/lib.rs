@@ -34,8 +34,9 @@ pub fn main() {
     // create the initial app state
     let veloren = Game{name:"Veloren".to_string(), language:"Rust".to_string()};
     let zeroad = Game{name:"0ad".to_string(), language:"C++".to_string()};
+    let stk = Game{name:"Super Tux Kart".to_string(), language:"C++".to_string()};
     let initial_state = AppData {
-        games: Arc::new(vec![veloren, zeroad]),
+        games: Arc::new(vec![veloren, zeroad, stk]),
     };
 
     // start the application
@@ -46,21 +47,21 @@ pub fn main() {
 
 fn build_root_widget() -> impl Widget<AppData> {
     let list = Scroll::new(List::new(|| {
-        Label::new(|game: &Game, _env: &_| game.name.clone())
-            .align_vertical(UnitPoint::LEFT)
+        let name = Label::new(|game: &Game, _env: &_| game.name.clone());
+        let language = Label::new(|game: &Game, _env: &_| game.language.clone());
+        Flex::row()
+            .with_child(name)
+            .with_flex_spacer(10.0)
+            .with_child(language)
             .padding(10.0)
-            .expand()
-            .height(50.0)
-            .background(Color::rgb(0.5, 0.5, 0.5))
+            .background(Color::rgb(0.1, 0.1, 0.1))
         }))
         .vertical()
         .lens(AppData::games);
 
 
-    // arrange the two widgets vertically, with some padding
-    let layout = Flex::column()
-        .with_child(list);
+
 
     // center the two widgets in the available space
-    Align::centered(layout)
+    Align::centered(list)
 }
