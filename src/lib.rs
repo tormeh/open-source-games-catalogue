@@ -12,6 +12,7 @@ struct AppData {
 #[derive(Clone, Data, Lens)]
 struct Game {
     name: String,
+    genre: String,
     language: String
 }
 
@@ -32,9 +33,9 @@ pub fn main() {
     let main_window = WindowDesc::new(build_root_widget());
 
     // create the initial app state
-    let veloren = Game{name:"Veloren".to_string(), language:"Rust".to_string()};
-    let zeroad = Game{name:"0ad".to_string(), language:"C++".to_string()};
-    let stk = Game{name:"Super Tux Kart".to_string(), language:"C++".to_string()};
+    let veloren = Game{name:"Veloren".to_string(), genre:"MMORPG".to_string(), language:"Rust".to_string()};
+    let zeroad = Game{name:"0ad".to_string(), genre:"RTS".to_string(), language:"C++".to_string()};
+    let stk = Game{name:"Super Tux Kart".to_string(), genre:"Racing".to_string(), language:"C++".to_string()};
     let initial_state = AppData {
         games: Arc::new(vec![veloren, zeroad, stk]),
     };
@@ -48,10 +49,13 @@ pub fn main() {
 fn build_root_widget() -> impl Widget<AppData> {
     let list = Scroll::new(List::new(|| {
         let name = Label::new(|game: &Game, _env: &_| game.name.clone());
+        let genre = Label::new(|game: &Game, _env: &_| game.genre.clone());
         let language = Label::new(|game: &Game, _env: &_| game.language.clone());
         Flex::row()
             .with_child(name)
-            .with_flex_spacer(10.0)
+            .with_flex_spacer(1.0)
+            .with_child(genre)
+            .with_flex_spacer(1.0)
             .with_child(language)
             .padding(10.0)
             .background(Color::rgb(0.1, 0.1, 0.1))
